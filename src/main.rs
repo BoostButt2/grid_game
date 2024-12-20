@@ -3,45 +3,67 @@ use std::io;
 struct Player {
     name: String,
     p: u8,
-    points: u8
+    points: u8,
 }
 
 fn create_player(name: String, p: u8) -> Player {
-    let player = Player { name, p, points: 0};
+    let player = Player { name, p, points: 0 };
     player
 }
 
 fn create_grid(rows: usize, cols: usize) -> Vec<Vec<char>> {
-    let mut grid: Vec<Vec<char>> = vec![vec!['#'; rows]; cols]; 
+    let mut grid: Vec<Vec<char>> = vec![vec!['#'; rows]; cols];
     grid
 }
 
-fn make_move(mut grid: Vec<Vec<char>>, player: Player, x: usize, y: usize) -> Vec<Vec<char>> {
-    if (is_out_of_bounds(&grid, &x, &y)){
+fn make_move(mut grid: Vec<Vec<char>>, player: &Player, x: usize, y: usize) -> (Vec<Vec<char>>, bool) {
+    if is_out_of_bounds(&grid, &x, &y) {
         println!("Invalid move. Try again!");
-        return grid;
+        return (grid, false);
     }
-    match grid[x][y] { //AI helped with this check. This is more readable 
+    match grid[x][y] {
         '#' => {
             match player.p {
                 1 => grid[x][y] = 'X',
                 2 => grid[x][y] = 'O',
-                _ => println!("Please don't"),
+                _ => {
+                    println!("Invalid player!");
+                    return (grid.clone(), false);
+                }
             }
+            (grid.clone(), true)
+        },
+        _ => {
+            println!("Cell already occupied!");
+            (grid.clone(), false)
         }
-        _ => println!("Cell already occupied!"),
     }
-    grid
+}
+
+fn get_move() -> Vec<usize> {
+    let mut input = String::new();
+    io::stdin()
+        .read_line(&mut input)
+        .expect("Input couldn't be read");
+    let coords_string: Vec<&str> = input.split(',').collect();
+    println!("coords_string: {} {}", coords_string[0], coords_string[1]);
+    let mut coords: Vec<usize> = Vec::new();
+    
+    for c in coords_string {
+        coords.push(c.trim().parse::<usize>().unwrap()); //AI: unwrap
+    };
+
+    return coords;
 }
 
 fn is_out_of_bounds(grid: &Vec<Vec<char>>, x: &usize, y: &usize) -> bool {
-    if(x >= &grid.len() || y >= &grid[0].len()) {
+    if (x >= &grid.len() || y >= &grid[0].len()) {
         return true;
     }
     false
 }
 
-fn print_grid(grid: &Vec<Vec<char>>){
+fn print_grid(grid: &Vec<Vec<char>>) {
     for row in grid {
         for cell in row {
             print!("{}", cell);
@@ -50,10 +72,32 @@ fn print_grid(grid: &Vec<Vec<char>>){
     }
 }
 
-fn start_tic_tact_toe(grid: Vec<Vec<char>>, player1: Player, player2: Player){
+fn start_tic_tact_toe(mut grid: Vec<Vec<char>>, player1: Player, player2: Player) {
     println!("{} vs {}", player1.name, player2.name);
-    
-    print_grid(&grid);
+    let mut is_active = true;
+    let mut current_player = &player1;
+
+    while is_active {
+        let mut is_successful = true;
+        println!("{}'s turn", current_player.name);
+        print_grid(&grid);
+        let player_move = get_move();
+        (grid, is_successful) = make_move(grid, current_player, player_move[0], player_move[1]);
+        
+        if is_successful {
+            match current_player.p {
+                1 => current_player = &player2,
+                2 => current_player = &player1,
+                _ => println!("Player doesn't exist")
+            }
+        }
+    };
+}
+
+fn check_win() -> bool {
+    let mut win = false;
+
+    win
 }
 
 fn main() {
