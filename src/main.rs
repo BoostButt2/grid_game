@@ -16,7 +16,12 @@ fn create_grid(rows: usize, cols: usize) -> Vec<Vec<char>> {
     grid
 }
 
-fn make_move(mut grid: Vec<Vec<char>>, player: &Player, x: usize, y: usize) -> (Vec<Vec<char>>, bool) {
+fn make_move(
+    mut grid: Vec<Vec<char>>,
+    player: &Player,
+    x: usize,
+    y: usize,
+) -> (Vec<Vec<char>>, bool) {
     if is_out_of_bounds(&grid, &x, &y) {
         println!("Invalid move. Try again!");
         return (grid, false);
@@ -32,7 +37,7 @@ fn make_move(mut grid: Vec<Vec<char>>, player: &Player, x: usize, y: usize) -> (
                 }
             }
             (grid.clone(), true)
-        },
+        }
         _ => {
             println!("Cell already occupied!");
             (grid.clone(), false)
@@ -48,10 +53,10 @@ fn get_move() -> Vec<usize> {
     let coords_string: Vec<&str> = input.split(',').collect();
     println!("coords_string: {} {}", coords_string[0], coords_string[1]);
     let mut coords: Vec<usize> = Vec::new();
-    
+
     for c in coords_string {
         coords.push(c.trim().parse::<usize>().unwrap()); //AI: unwrap
-    };
+    }
 
     return coords;
 }
@@ -72,6 +77,31 @@ fn print_grid(grid: &Vec<Vec<char>>) {
     }
 }
 
+fn check_win(grid: &Vec<Vec<char>>) -> bool {
+    for row in grid {
+        if row[0] != '#' && row[0] == row[1] && row[1] == row[2] {
+            return true;
+        }
+    }
+
+    for col in 0..3 {
+        if grid[0][col] != '#' && grid[0][col] == grid[1][col] && grid[1][col] == grid[2][col]
+        {
+            return true;
+        }
+    }
+
+    if grid[0][0] != '#' && grid[0][0] == grid[1][1] && grid[1][1] == grid[2][2] {
+        return true;
+    }
+
+    if grid[0][2] != '#' && grid[0][2] == grid[1][1] && grid[1][1] == grid[2][0] {
+        return true;
+    }
+
+    false
+}
+
 fn start_tic_tact_toe(mut grid: Vec<Vec<char>>, player1: Player, player2: Player) {
     println!("{} vs {}", player1.name, player2.name);
     let mut is_active = true;
@@ -83,21 +113,20 @@ fn start_tic_tact_toe(mut grid: Vec<Vec<char>>, player1: Player, player2: Player
         print_grid(&grid);
         let player_move = get_move();
         (grid, is_successful) = make_move(grid, current_player, player_move[0], player_move[1]);
-        
+
         if is_successful {
             match current_player.p {
                 1 => current_player = &player2,
                 2 => current_player = &player1,
-                _ => println!("Player doesn't exist")
+                _ => println!("Player doesn't exist"),
             }
         }
-    };
-}
 
-fn check_win() -> bool {
-    let mut win = false;
-
-    win
+        if check_win(&grid) {
+            println!("{} won the game!", current_player.name);
+            break
+        }
+    }
 }
 
 fn main() {
