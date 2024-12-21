@@ -124,7 +124,7 @@ fn start_tic_tact_toe(mut grid: Vec<Vec<char>>, player1: Player, player2: Player
 
         if check_win(&grid) {
             println!("{} won the game!", current_player.name);
-            break
+            is_active = false;
         }
     }
 }
