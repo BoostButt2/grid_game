@@ -2,12 +2,16 @@ use std::io;
 
 struct Player {
     name: String,
-    p: u8,
-    points: u8,
+    p: p
 }
 
-fn create_player(name: String, p: u8) -> Player {
-    let player = Player { name, p, points: 0 };
+enum p {
+    player1,
+    player2
+}
+
+fn create_player(name: String, p: p) -> Player {
+    let player = Player { name, p };
     player
 }
 
@@ -29,12 +33,8 @@ fn make_move(
     match grid[x][y] {
         '#' => {
             match player.p {
-                1 => grid[x][y] = 'X',
-                2 => grid[x][y] = 'O',
-                _ => {
-                    println!("Invalid player!");
-                    return (grid.clone(), false);
-                }
+                p::player1 => grid[x][y] = 'X',
+                p::player2 => grid[x][y] = 'O',
             }
             (grid.clone(), true)
         }
@@ -51,7 +51,6 @@ fn get_move() -> Vec<usize> {
         .read_line(&mut input)
         .expect("Input couldn't be read");
     let coords_string: Vec<&str> = input.split(',').collect();
-    println!("coords_string: {} {}", coords_string[0], coords_string[1]);
     let mut coords: Vec<usize> = Vec::new();
 
     for c in coords_string {
@@ -116,9 +115,8 @@ fn start_tic_tact_toe(mut grid: Vec<Vec<char>>, player1: Player, player2: Player
 
         if is_successful {
             match current_player.p {
-                1 => current_player = &player2,
-                2 => current_player = &player1,
-                _ => println!("Player doesn't exist"),
+                p::player1 => current_player = &player2,
+                p::player2 => current_player = &player1
             }
         }
 
@@ -135,8 +133,8 @@ fn main() {
     let cols: usize = 3;
 
     let mut grid = create_grid(rows, cols);
-    let mut player1 = create_player("Ferrero".to_string(), 1);
-    let mut player2 = create_player("Rocher".to_string(), 2);
+    let mut player1 = create_player("Ferrero".to_string(), p::player1);
+    let mut player2 = create_player("Rocher".to_string(), p::player2);
 
     start_tic_tact_toe(grid, player1, player2);
 }
