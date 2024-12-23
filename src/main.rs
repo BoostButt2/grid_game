@@ -2,21 +2,21 @@ use std::io;
 
 struct Player {
     name: String,
-    p: p
+    p: P
 }
 
-enum p {
-    player1,
-    player2
+enum P {
+    Player1,
+    Player2
 }
 
-fn create_player(name: String, p: p) -> Player {
+fn create_player(name: String, p: P) -> Player {
     let player = Player { name, p };
     player
 }
 
 fn create_grid(rows: usize, cols: usize) -> Vec<Vec<char>> {
-    let mut grid: Vec<Vec<char>> = vec![vec!['#'; rows]; cols];
+    let grid: Vec<Vec<char>> = vec![vec!['#'; rows]; cols];
     grid
 }
 
@@ -33,8 +33,8 @@ fn make_move(
     match grid[x][y] {
         '#' => {
             match player.p {
-                p::player1 => grid[x][y] = 'X',
-                p::player2 => grid[x][y] = 'O',
+                P::Player1 => grid[x][y] = 'X',
+                P::Player2 => grid[x][y] = 'O',
             }
             (grid.clone(), true)
         }
@@ -61,7 +61,7 @@ fn get_move() -> Vec<usize> {
 }
 
 fn is_out_of_bounds(grid: &Vec<Vec<char>>, x: &usize, y: &usize) -> bool {
-    if (x >= &grid.len() || y >= &grid[0].len()) {
+    if x >= &grid.len() || y >= &grid[0].len() {
         return true;
     }
     false
@@ -113,16 +113,17 @@ fn start_tic_tact_toe(mut grid: Vec<Vec<char>>, player1: Player, player2: Player
         let player_move = get_move();
         (grid, is_successful) = make_move(grid, current_player, player_move[0], player_move[1]);
 
-        if is_successful {
-            match current_player.p {
-                p::player1 => current_player = &player2,
-                p::player2 => current_player = &player1
-            }
-        }
-
         if check_win(&grid) {
             println!("{} won the game!", current_player.name);
+            print_grid(&grid);
             is_active = false;
+        }
+
+        if is_successful {
+            match current_player.p {
+                P::Player1 => current_player = &player2,
+                P::Player2 => current_player = &player1
+            }
         }
     }
 }
@@ -132,9 +133,9 @@ fn main() {
     let rows: usize = 3;
     let cols: usize = 3;
 
-    let mut grid = create_grid(rows, cols);
-    let mut player1 = create_player("Ferrero".to_string(), p::player1);
-    let mut player2 = create_player("Rocher".to_string(), p::player2);
+    let grid = create_grid(rows, cols);
+    let player1 = create_player("Ferrero".to_string(), P::Player1);
+    let player2 = create_player("Rocher".to_string(), P::Player2);
 
     start_tic_tact_toe(grid, player1, player2);
 }
