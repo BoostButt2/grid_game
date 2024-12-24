@@ -21,11 +21,7 @@ fn create_grid(rows: usize, cols: usize) -> Vec<Vec<char>> {
 }
 
 fn make_move(
-    mut grid: Vec<Vec<char>>,
-    player: &Player,
-    x: usize,
-    y: usize,
-) -> (Vec<Vec<char>>, bool) {
+    mut grid: Vec<Vec<char>>, player: &Player, x: usize, y: usize) -> (Vec<Vec<char>>, bool) {
     if is_out_of_bounds(&grid, &x, &y) {
         println!("Invalid move. Try again!");
         return (grid, false);
