@@ -1,4 +1,4 @@
-mod game;
+mod game; //separated the modules
 mod cell_value;
 mod player;
 use game::*;

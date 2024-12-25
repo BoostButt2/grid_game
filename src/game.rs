@@ -28,7 +28,7 @@ impl Game {
 
     pub fn make_move(&mut self, coord: [usize; 2]) {
         let [x, y] = coord;
-        if self.is_out_of_bounds(coord) || !self.is_empty(coord){
+        if self.is_out_of_bounds(coord) || !self.is_empty(coord){ //added check on valid moves
             return;
         }
         
